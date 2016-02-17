@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import CoreData
 
 class ImageFeedTableViewController: UITableViewController {
 
@@ -73,5 +74,41 @@ class ImageFeedTableViewController: UITableViewController {
             cell.dataTask?.cancel()
         }
     }
+  
+  override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+    var alertController = UIAlertController(title: "Add tag", message: "Please enter a tag name", preferredStyle: UIAlertControllerStyle.Alert)
+    
+    //Add cancel action
+    var cancelAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Cancel, handler: nil)
+    alertController.addAction(cancelAction)
+    
+    alertController.addTextFieldWithConfigurationHandler(nil)
+    
+    var addAction = UIAlertAction(title: "Add", style: UIAlertActionStyle.Default) { (action) -> Void in
+      if let tagName = alertController.textFields![0].text{
+        let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
+        appDelegate.dataController.tagFeedItem(tagName, feedItem: self.feed!.items[indexPath.row])
+      }
+    }
+    
+    alertController.addAction(addAction)
+    self.presentViewController(alertController, animated: true, completion: nil)
+    
+  }
+  
+  override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+    if segue.identifier == "showTags"{
+      let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
+      
+      let tagsViewController = segue.destinationViewController as? TagsTableViewController
+      let fetchRequest = NSFetchRequest(entityName: "Tag")
+      
+      fetchRequest.sortDescriptors = [NSSortDescriptor(key: "title", ascending: true)]
+      
+      tagsViewController?.fetchedResults = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: appDelegate.dataController.managedObjectContext, sectionNameKeyPath: nil, cacheName: nil)
+      
+    }
+    
+  }
 
 }

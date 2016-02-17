@@ -45,5 +45,46 @@ class DataController{
     
   }
   
+  func tagFeedItem(tagTitle: String, feedItem: FeedItem){
+    
+    //Create a predicate that will filter the title to the tag title sent to this func
+    var fetchRequest = NSFetchRequest(entityName: "Tag")
+    fetchRequest.predicate = NSPredicate(format: "title = %@", tagTitle)
+    
+    var fetchedTags: [Tag]
+    do{
+      fetchedTags = try self.managedObjectContext.executeFetchRequest(fetchRequest) as! [Tag]
+    } catch{
+      fatalError("fetch failed")
+    }
+  
+    
+    //If the tag does not yet exist, create the tag entity
+    var tag: Tag
+    if fetchedTags.count == 0{
+      tag = NSEntityDescription.insertNewObjectForEntityForName("Tag", inManagedObjectContext: managedObjectContext) as! Tag
+      tag.title = tagTitle
+    } else{
+      tag = fetchedTags[0]
+    }
+    
+    //Create the image entity
+    var newImage: Image
+    newImage = NSEntityDescription.insertNewObjectForEntityForName("Image", inManagedObjectContext: managedObjectContext) as! Image
+    newImage.title = tagTitle
+    newImage.imageURL = feedItem.imageURL.absoluteString
+    newImage.tag = tag
+    
+    do{
+      try self.managedObjectContext.save()
+    } catch{
+    
+    }
+  
+  }
+  
+  
+  
+  
 }
 

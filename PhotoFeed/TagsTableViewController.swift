@@ -7,8 +7,20 @@
 //
 
 import UIKit
+import CoreData
 
 class TagsTableViewController: UITableViewController {
+  
+  var fetchedResults : NSFetchedResultsController!
+  
+  
+  override func viewWillAppear(animated: Bool) {
+    do{
+      try self.fetchedResults.performFetch()
+    } catch {
+      fatalError("failed to fetch results")
+    }
+  }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -29,23 +41,25 @@ class TagsTableViewController: UITableViewController {
 
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
         // #warning Incomplete implementation, return the number of sections
-        return 0
+        return self.fetchedResults.sections!.count
     }
 
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
-        return 0
+        return self.fetchedResults.sections![section].objects!.count
     }
 
-    /*
+  
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("reuseIdentifier", forIndexPath: indexPath)
+        let cell = tableView.dequeueReusableCellWithIdentifier("tagCell", forIndexPath: indexPath)
+        let tag = fetchedResults.objectAtIndexPath(indexPath) as! Tag
+        cell.textLabel?.text = tag.title
 
         // Configure the cell...
 
         return cell
     }
-    */
+  
 
     /*
     // Override to support conditional editing of the table view.
