@@ -68,18 +68,32 @@ class DataController{
       tag = fetchedTags[0]
     }
     
-    //Create the image entity
-    var newImage: Image
-    newImage = NSEntityDescription.insertNewObjectForEntityForName("Image", inManagedObjectContext: managedObjectContext) as! Image
-    newImage.title = tagTitle
-    newImage.imageURL = feedItem.imageURL.absoluteString
-    newImage.tag = tag
+    //Check if the image has already been assigned that tag
+    fetchRequest = NSFetchRequest(entityName: "Image")
+    fetchRequest.predicate = NSPredicate(format: "imageURL = %@", feedItem.imageURL.absoluteString)
     
+    var fetchedImages = [Image]()
     do{
-      try self.managedObjectContext.save()
-    } catch{
-    
+      fetchedImages = try self.managedObjectContext.executeFetchRequest(fetchRequest) as! [Image]
+    } catch {
+      
     }
+    
+    //Create the image entity
+    if fetchedImages.count == 0{
+      var newImage: Image
+      newImage = NSEntityDescription.insertNewObjectForEntityForName("Image", inManagedObjectContext: managedObjectContext) as! Image
+      newImage.title = tagTitle
+      newImage.imageURL = feedItem.imageURL.absoluteString
+      newImage.tag = tag
+      
+      do{
+        try self.managedObjectContext.save()
+      } catch{
+        
+      }
+    }
+    
   
   }
   
