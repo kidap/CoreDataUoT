@@ -96,14 +96,33 @@ class TagsTableViewController: UITableViewController {
     }
     */
 
-    /*
+  
     // MARK: - Navigation
 
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         // Get the new view controller using segue.destinationViewController.
         // Pass the selected object to the new view controller.
+      
+      if segue.identifier == "showImages"{
+        let imageFeedVC = segue.destinationViewController as! ImageFeedTableViewController
+        let tag = self.fetchedResults.objectAtIndexPath(self.tableView.indexPathForSelectedRow!) as! Tag
+        
+        var feedItems = [FeedItem]()
+        if let images = tag.images?.allObjects as? [Image]{
+          
+          for image in images{
+            feedItems.append(FeedItem(title: image.title!, imageURL: NSURL(string: image.imageURL!)!))
+            
+          }
+        
+        }
+        
+        let feed : Feed = Feed(items: feedItems, sourceURL: NSURL())
+        
+        imageFeedVC.feed = feed
+      }
     }
-    */
+  
 
 }
